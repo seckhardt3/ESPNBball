@@ -2,8 +2,22 @@
 title: "BballManipulation"
 author: "Sam Eckhardt and Joey Miranda"
 date: "Tuesday, October 07, 2014"
-output: beamer_presentation
+output: html_document
 ---
+
+```{r setoptions, echo=FALSE}
+library(knitr)
+options(width=60, show.signif.stars=FALSE)
+opts_chunk$set(echo=TRUE,
+               results="asis",
+               warning=FALSE,
+               message=FALSE,
+               fig.width=10,
+               fig.height=8,
+               tidy=TRUE,
+               fig.align='center')
+```
+
 
 ```{r,echo=FALSE}
 library(ggplot2)
@@ -13,11 +27,15 @@ library(gtable)
 library(gridExtra)
 library(reshape2)
 ```
+## Data
 
+This data has been collected on total season statistics for teams from the Big 12, as well as the West Coast Conference. 
 ```{r}
-load("C:/Users/Sam/Documents/Senior Fall/MKTG 489/ESPNBball/Seasonstatisticscleaned.rda")
+load("Seasonstatisticscleaned.rda")
 ```
+#Kevin Durant Manipulation
 
+This part of the project looks at the 2006-2007 Texas Longhorns, or Kevin Durant's college team. We were tasked to find the top three players in each of the major categories in the data set. We formatted that, then created a grid arrange to show that.  
 ```{r}
 teamminutes<-Seasonstatistics %>%
   filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
@@ -125,7 +143,11 @@ p13=ggplot(teamto,aes(x=reorder(Player,-TurnOvers), y=TurnOvers, fill=Player,))+
 
 grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,ncol=4)
 ```
+As you can see, Kevin Durant tops most of these statistical categories. 
 
+##Totals and Averages of the West Coast Conference
+
+These graphs show the year over year Total points scored and Average points scored by player of the WCC over the years included in the data set. 
 ```{r}
 
 newdf=Seasonstatistics %>% 
@@ -144,7 +166,9 @@ ggplot(subset(newdf,variable %in% c("Points")),aes(x=Year, y=sum, color=Team, gr
 
 ggplot(subset(newdf,variable %in% c("Points")),aes(x=Year, y=Mean, color=Team, group=Team))+geom_point()+geom_line()+facet_wrap(~Team,ncol=2)+ggtitle("Average Points Scored Per Player in a Season by Team")+scale_color_manual(values=teampaletteWCC)
 ```
+##Gonzaga Players
 
+This graph shows significant Gonzaga players, and how many points they scored on a year by year basis while they played for the team. This allows us to compare the scoring amounts of different players over different years and eras of Gonzaga Basketball. 
 ```{r}
 GonzagaPoints<-Seasonstatistics %>%
   filter(Team=="Gonzaga Bulldogs") %>%
