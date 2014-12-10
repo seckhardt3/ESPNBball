@@ -1,0 +1,157 @@
+---
+title: "BballManipulation"
+author: "Sam Eckhardt and Joey Miranda"
+date: "Tuesday, October 07, 2014"
+output: beamer_presentation
+---
+
+```{r,echo=FALSE}
+library(ggplot2)
+library(dplyr)
+library(ggmap)
+library(gtable)
+library(gridExtra)
+library(reshape2)
+```
+
+```{r}
+load("C:/Users/Sam/Documents/Senior Fall/MKTG 489/ESPNBball/Seasonstatisticscleaned.rda")
+```
+
+```{r}
+teamminutes<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Minutes) %>%
+  arrange(-Minutes) %>%
+  head(3)
+
+p1=ggplot(teamminutes,aes(x= reorder(Player,-Minutes), y=Minutes, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+teamrebounds<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Rebounds) %>%
+  arrange(-Rebounds) %>%
+  head(3)
+
+p2=ggplot(teamrebounds,aes(x=reorder(Player,-Rebounds), y=Rebounds, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+teammadefg<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Field.Goals.Made) %>%
+  arrange(-Field.Goals.Made) %>%
+  head(3)
+
+p3=ggplot(teammadefg,aes(x=reorder(Player,-Field.Goals.Made), y=Field.Goals.Made, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+teamattfg<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Field.Goals.Attempted) %>%
+  arrange(-Field.Goals.Attempted) %>%
+  head(3)
+
+p4=ggplot(teamattfg,aes(x=reorder(Player,-Field.Goals.Attempted), y=Field.Goals.Attempted, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+teammadeft<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Free.Throws.Made) %>%
+  arrange(-Free.Throws.Made) %>%
+  head(3)
+
+p5=ggplot(teammadeft,aes(x=reorder(Player,-Free.Throws.Made), y=Free.Throws.Made, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+teamattft<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Free.Throws.Attempted) %>%
+  arrange(-Free.Throws.Attempted) %>%
+  head(3)
+
+p6=ggplot(teamattft,aes(x=reorder(Player,-Free.Throws.Attempted), y=Free.Throws.Attempted, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+team3ptmade<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Three.Point.FieldGoals.Made) %>%
+  arrange(-Three.Point.FieldGoals.Made) %>%
+  head(3)
+
+p7=ggplot(team3ptmade,aes(x=reorder(Player,-Three.Point.FieldGoals.Made), y=Three.Point.FieldGoals.Made, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+team3ptatt<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Three.Point.FieldGoals.Attempted) %>%
+  arrange(-Three.Point.FieldGoals.Attempted) %>%
+  head(3)
+
+p8=ggplot(team3ptatt,aes(x=reorder(Player,-Three.Point.FieldGoals.Attempted), y=Three.Point.FieldGoals.Attempted, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+teampoints<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Points) %>%
+  arrange(-Points) %>%
+  head(3)
+
+p9=ggplot(teampoints,aes(x=reorder(Player,-Points), y=Points, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+teamoffreb<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Offensive.Rebounds) %>%
+  arrange(-Offensive.Rebounds) %>%
+  head(3)
+
+p10=ggplot(teamoffreb,aes(x=reorder(Player,-Offensive.Rebounds), y=Offensive.Rebounds, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+teamdefreb<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Defensive.Rebounds) %>%
+  arrange(-Defensive.Rebounds) %>%
+  head(3)
+
+p11=ggplot(teamdefreb,aes(x=reorder(Player,-Defensive.Rebounds), y=Defensive.Rebounds, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+teamassist<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, Assists) %>%
+  arrange(-Assists) %>%
+  head(3)
+
+p12=ggplot(teamassist,aes(x=reorder(Player,-Assists), y=Assists, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+teamto<-Seasonstatistics %>%
+  filter(Team=="Texas Longhorns",Year=="2006-2007") %>%
+  select(Player, TurnOvers) %>%
+  arrange(-TurnOvers) %>%
+  head(3)
+
+p13=ggplot(teamto,aes(x=reorder(Player,-TurnOvers), y=TurnOvers, fill=Player,))+ geom_bar(stat="identity") + theme(legend.position="none")
+
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,ncol=4)
+```
+
+```{r}
+
+newdf=Seasonstatistics %>% 
+  tbl_df(.)%>% 
+  select(2:18,20)%>% 
+  melt(.,id=c("Team","Year","Conference"))%>%
+  filter(Conference=="West Coast")%>%
+  group_by(Team,Year,variable) %>% 
+  summarise(sum=sum(value),Mean=mean(value))
+
+
+teampaletteWCC <- c("#000000","#000099","#990033","#FF6633","#99CCFF","#330099","#99CC66","#00CCFF","#009900","#999999")
+  
+  
+ggplot(subset(newdf,variable %in% c("Points")),aes(x=Year, y=sum, color=Team, group=Team))+geom_point()+geom_line()+facet_wrap(~Team,ncol=2)+ggtitle("Total Points Scored by Team Per Year")+scale_color_manual(values=teampaletteWCC)
+
+ggplot(subset(newdf,variable %in% c("Points")),aes(x=Year, y=Mean, color=Team, group=Team))+geom_point()+geom_line()+facet_wrap(~Team,ncol=2)+ggtitle("Average Points Scored Per Player in a Season by Team")+scale_color_manual(values=teampaletteWCC)
+```
+
+```{r}
+GonzagaPoints<-Seasonstatistics %>%
+  filter(Team=="Gonzaga Bulldogs") %>%
+  select(Player, Points,Year) %>%
+  arrange(Year)
+
+ggplot(subset(GonzagaPoints,Player %in% c("Dan Dickau","Ronny Turiaf","Adam Morrison","Derek Raivio","Josh Heytvelt","Matt Bouldin","Elias Harris","Kevin Pangos","Robert Sacre","Austin Daye","Kelly Olynyk","Mike Hart","Sam Dower","J.P. Batista","Gary Bell Jr.")),aes(x=Year,y=Points,color=Player,group=Player))+geom_point()+geom_line()+geom_text(aes(label=Player),size=4,angle=30)+ theme(legend.position="none")
+
+ggplot(subset(GonzagaPoints,Player %in% c("Dan Dickau","Ronny Turiaf","Derek Raivio","Josh Heytvelt","Matt Bouldin","Elias Harris","Kevin Pangos","Robert Sacre","Austin Daye","Kelly Olynyk","Mike Hart","Sam Dower","J.P. Batista","Gary Bell Jr.")),aes(x=Year,y=Points,color=Player,group=Player))+geom_point()+geom_line()+geom_text(aes(label=Player),size=4,angle=30)+ theme(legend.position="none")
+

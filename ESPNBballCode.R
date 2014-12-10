@@ -306,31 +306,35 @@ save(Seasonstatistics,file="Seasonstatisticscleaned.rda")
 #Fun begins
 # load("Gamestatisticscleaned.rda")
 # Table of schools, Cities, and Conference
-ggplot(Gamestatistics,aes(x=Conference,y=City,color=Conference))+geom_text(data=Gamestatistics,aes(label=Team))+
+ggplot(Gamestatistics,aes(x=Conference,y=City,color=Conference))+geom_text(aes(label=Team))+
   theme(axis.text.x = element_text(color="black",size=12))+ 
   theme(axis.text.y = element_text(color="black",size=12))+theme(legend.position="none")+labs(y="",x="")
 
-
+```{r}
 # Where exactly are these cities on the US map? Let's plot the cities of these teams
-
+  
 location=c(-125,24.207,-70,50) # It took a bit to figure these coordinates out - zoom to the appropriate location and level using openstreetmap.org 
 # and find coordinates from the export link
 
-map=get_map(location=location,maptype="roadmap",source="osm")
-usmap=ggmap(map)
-
-locs=geocode(as.character(unique(Gamestatistics$City))) # find the 20 cities from the data and identify their latitude and longitude; combine City information
+map=get_map(location=location,maptype="roadmap",source="google")
 locs$City=unique(Gamestatistics$City) 
 Gamestatistics$lat=locs$lat[ match(Gamestatistics$City,locs$City)]# bring latitude and longitude information to main data frame
 Gamestatistics$lon=locs$lon[ match(Gamestatistics$City,locs$City)]
+ 
+ # The plot
+levels(Gamestatistics$Team) # note the sequence of teams and arrange the colors in palette in corresponding sequence
 
-# The plot
-usmap+geom_point(data=Gamestatistics,aes(x=lon,y=lat,color=Conference),size=7)+ ggtitle("Location of WCC and Big 12 Schools")
-  
+teampalette <- c("#006600","#FFFFFF","#000099","#990000","#0000FF","#6600CC","#990033","#660000","#FF3300","#FF6633","#99CCFF","#330099","#99CC66","#00CCFF","#009900","#999999","#6633CC","#FF9933","#FF0000", "#FFFF00")
+
+
+usmap+geom_point(data=Gamestatistics,aes(x=lon,y=lat,color=scale_color_manual),size=5)+ scale_color_manual(values=teampalette)+ggtitle("Location of WCC and Big 12 Schools")
+
+```
+
 # Let's plot histograms of some variable, say Points.Per.Game, for all teams 
-ggplot(Gamestatistics,aes(x=Points.Per.Game, fill=Team))+
-  geom_histogram()+ggtitle("Histogram of Points.Per.Game for All Teams - Data Collapsed Across All Years")+ 
-  facet_wrap(~Team,ncol=4) + theme(legend.position="none")
+ggplot(subset(subset(Gamestatistics,Conference %in% c("West Coast")),Year %in% c("2011-2012","2012-2013")),aes(x=Points.Per.Game, fill=Team))+
+  geom_histogram()+ggtitle("Histogram of Points.Per.Game for West Coast Conference- 2011-2013")+ 
+  facet_wrap(Team~Year,ncol=2) + theme(legend.position="none")
 
 # Two schools compared on One Variable --- say, Points.Per.Game - Kernel Density Plot
 

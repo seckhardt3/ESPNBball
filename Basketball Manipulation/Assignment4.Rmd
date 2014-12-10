@@ -1,0 +1,99 @@
+---
+title: "BBall Season Presentation"
+author: "Sam Eckhardt and Joey Miranda"
+date: "Sunday, October 05, 2014"
+output: ioslides_presentation
+---
+```{r}
+
+library(XML)
+library(ggmap)
+library(ggplot2)
+library(dplyr)
+
+setwd("C:/Users/Sam/Documents/Senior Fall/MKTG 489/ESPNBball")
+
+```
+
+
+## The Data 
+
+The Data we have has been recieved from espn.com. It includes the season statistics for two conferences, the Big 12 and the West Coast Conference, from the season of 2001-2002 to the season of 2012-2013. 
+
+```{r}
+
+load("C:/Users/Sam/Documents/Senior Fall/MKTG 489/ESPNBball/Gamestatisticscleaned.rda")
+
+```
+
+##Location of Teams With Points in Team Color
+
+```{r}
+
+# Where exactly are these cities on the US map? Let's plot the cities of these teams
+  
+location=c(-125,24.207,-70,50) # It took a bit to figure these coordinates out - zoom to the appropriate location and level using openstreetmap.org 
+# and find coordinates from the export link
+
+map=get_map(location=location,maptype="roadmap",source="google")
+usmap=ggmap(map)
+locs=geocode(as.character(unique(Gamestatistics$City)))
+locs$City=unique(Gamestatistics$City) 
+Gamestatistics$lat=locs$lat[ match(Gamestatistics$City,locs$City)]# bring latitude and longitude information to main data frame
+Gamestatistics$lon=locs$lon[ match(Gamestatistics$City,locs$City)]
+ 
+levels(Gamestatistics$Team) # note the sequence of teams and arrange the colors in palette in corresponding sequence
+
+ # The plot
+teampalette <- c("#006600","#FFFFFF","#000099","#990000","#0000FF","#6600CC","#990033","#660000","#FF3300","#FF6633","#99CCFF","#330099","#99CC66","#00CCFF","#009900","#999999","#6633CC","#FF9933","#FF0000", "#FFFF00")
+
+
+usmap+geom_point(data=Gamestatistics,aes(x=lon,y=lat,color=Team),size=7)+ ggtitle("Location of WCC and Big 12 Schools")+
+  scale_color_manual(values=teampalette) # add theme(legend.position="none") if you don't want the legend
+
+
+```
+
+
+## Average Points Per Game of Players by Conference in Different Seasons
+
+```{r}
+ppgmean=Gamestatistics %>% group_by(Team,Year) %>% summarise(Mean.Points.Per.Game=mean(Points.Per.Game))
+
+teampalette <- c("#006600","#FFFFFF","#000099","#990000","#0000FF","#6600CC","#990033","#660000","#FF3300","#FF6633","#99CCFF","#330099","#99CC66","#00CCFF","#009900","#999999","#6633CC","#FF9933","#FF0000", "#FFFF00")
+
+levels(Gamestatistics$Team)
+#Plot
+ggplot(ppgmean,aes(x=Year,y=Mean.Points.Per.Game,,color=Team,group=Team))+
+  geom_point()+geom_line()+
+  theme(axis.text.x = element_text(angle=-90))+ggtitle("Mean Points Per Game of Players of Different Teams in Different Seasons") +scale_color_manual(values=teampalette)
+
+library(dplyr)
+
+Gamestatistics%>%select(Team,Year,Points.Per.Game)%>%group_by(Team,Year) %>% summarise(Mean.Points.Per.Game=mean(Points.Per.Game))
+
+```
+
+## Average Points Per Game of Players by WCC Teams in Different Seasons
+
+```{r}
+ppgmeanConf=Gamestatistics %>% group_by(Team,Year) %>% summarise(Mean.Points.Per.Game=mean(Points.Per.Game))
+
+teampaletteWCC <- c("#FFFFFF","#000099","#990033","#FF6633","#99CCFF","#330099","#99CC66","#00CCFF","#009900","#999999")
+
+levels(Gamestatistics$Team)
+
+ggplot(subset(ppgmeanConf,Team %in% c("Gonzaga Bulldogs","Brigham Young Cougars","Loyola Marymount Lions","Saint Mary's Gaels","San Francisco Dons", "Pepperdine Waves", "Pacific Tigers","San Diego Toreros","Portland Pilots","Santa Clara Broncos","")),aes(x=Year,y=Mean.Points.Per.Game,color=Team,group=Team))+geom_point()+geom_line()+ggtitle("Mean Points Per Game of Players in the West Coast Conference by Season")+scale_color_manual(values=teampaletteWCC)
+```
+
+##Average Points Per Game of Players by Big 12 Teams in Different Seasons
+
+```{r}
+ppgmeanConf=Gamestatistics %>% group_by(Team,Year) %>% summarise(Mean.Points.Per.Game=mean(Points.Per.Game))
+
+teampaletteB12 <- c("#006600","#990000","#0000FF","#6600CC","#660000","#FF3300","#6633CC","#FF9933","#FF0000", "#FFFF00")
+
+levels(Gamestatistics$Team)
+
+ggplot(subset(ppgmeanConf,Team %in% c("Baylor Bears","Kansas Jayhawks","Kansas State Wildcats","Oklahoma Sooners","Oklahoma State Cowboys", "Texas Tech Red Raiders", "TCU Horned Frogs","Texas Longhorns","West Virginia Mountaineers","Iowa State Cyclones","")),aes(x=Year,y=Mean.Points.Per.Game,color=Team,group=Team))+geom_point()+geom_line()+ggtitle("Mean Points Per Game of Players in the Big 12 by Season")+scale_color_manual(values=teampaletteB12)
+```
